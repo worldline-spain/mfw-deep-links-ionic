@@ -67,7 +67,7 @@
    *
    * * As `true` boolean value: the state URL is used as deep link route URL
    * * As `String` value: explicit deep link route URL
-   * * As `Function` or `Array.<string|function()>: the state URL is used as deep link and the injectable callback is set.
+   * * As `Function` or `Array.<string|function()>`: the state URL is used as deep link and the injectable callback is set.
    * * As `object` value: the state URL is used as deep link and the object itself is used as route data.
    *    * You can define a `callback` property with an injectable callback definition.
    *
@@ -179,7 +179,24 @@
      * @methodOf mfw-ionic.deep-links.$mfwiLinksProvider
      *
      * @description
-     * Configure generic options to be used on each new browser launched.
+     * Configure linking options.
+     *
+     *
+     * **Example**
+     *
+     * <pre>
+     *     $mfwiLinksProvider.config({
+     *         routesPrefix: '/app',
+     *         matchCallback: successCallback,
+     *         nomatchCallback: failCallback
+     *     });
+     *
+     *     // Registering any route will have a '/app' prefix
+     *     $mfwiLinksProvider.addRoute('/path', callback);
+     *
+     *     // It's actually registered as `/app/path`
+     *     // When a match is found, both `successCallback` and `callback` will be executed.
+     * </pre>
      *
      * @param {object} options Options
      * @param {Function=} options.matchCallback Function to be executed for all matches.

@@ -1,4 +1,4 @@
-<a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/13c39bb/src/mfw-ionic-deep-links.service.js#L166" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">$mfwiLinksProvider</code>
+<a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/5d93ea4/src/mfw-ionic-deep-links.service.js#L166" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">$mfwiLinksProvider</code>
 <div><span class="hint">service in module <code ng:non-bindable="">mfw-ionic.deep-links</code>
 </span>
 </div>
@@ -7,7 +7,7 @@
 <div class="description"><div class="mfw-ionic-deep-links-mfwilinksprovider-page"><p>Provider of <a href="#/api/mfw-ionic.deep-links.service:$mfwiLinks"><code>$mfwiLinks</code></a> service.</p>
 </div></div>
 <div class="member method"><h2 id="methods">Methods</h2>
-<ul class="methods"><li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/13c39bb/src/mfw-ionic-deep-links.service.js#L251" class="view-source icon-eye-open"> </a><h3 id="methods_addroute">addRoute(routeDefOrUrl, stateNameOrCallback)</h3>
+<ul class="methods"><li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/5d93ea4/src/mfw-ionic-deep-links.service.js#L268" class="view-source icon-eye-open"> </a><h3 id="methods_addroute">addRoute(routeDefOrUrl, stateNameOrCallback)</h3>
 <div class="addroute"><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Declare a new route by setting the relative URI and an associated callback.</p>
 <p>Callbacks can be:</p>
 <ul>
@@ -48,8 +48,22 @@ $mfwiLinksProvider
 </div></td></tr></tbody></table><h5 id="methods_addroute_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Provider instance for nested calls.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/13c39bb/src/mfw-ionic-deep-links.service.js#L197" class="view-source icon-eye-open"> </a><h3 id="methods_config">config(options)</h3>
-<div class="config"><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Configure generic options to be used on each new browser launched.</p>
+<li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/5d93ea4/src/mfw-ionic-deep-links.service.js#L214" class="view-source icon-eye-open"> </a><h3 id="methods_config">config(options)</h3>
+<div class="config"><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Configure linking options.</p>
+<p><strong>Example</strong></p>
+<pre class="prettyprint linenums">
+    $mfwiLinksProvider.config({
+        routesPrefix: '/app',
+        matchCallback: successCallback,
+        nomatchCallback: failCallback
+    });
+
+    // Registering any route will have a '/app' prefix
+    $mfwiLinksProvider.addRoute('/path', callback);
+
+    // It's actually registered as `/app/path`
+    // When a match is found, both `successCallback` and `callback` will be executed.
+</pre>
 </div><h5 id="methods_config_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>options</td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Options</p>
 </div><table><thead><tr><th>Property</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>matchCallback <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-function">Function</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Function to be executed for all matches.</p>
 <p>   Defaults to: <code>undefined</code></p>
