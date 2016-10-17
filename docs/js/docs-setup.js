@@ -19,7 +19,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "mfw-ionic.deep-links",
       "shortDescription": "Provider of $mfwiLinks service.",
-      "keywords": "$log $match $mfwilinks $mfwilinksprovider accessed addroute angularjs api app array associated browser callback callbacks calls config configure data declare deep deep-links defaults definition executed explicit function generic handling-deeplinks-in-javascript help https implicit inject injectable instance launched link ll loaded log match matchcallback matched matches method methods_addroute mfw-ionic named nested nomatchcallback non-matches object options org parent prefix prepended provider receive relative route routedeforurl router routesprefix service setting settings special statenameorcallback string target ui ui-router undefined uri url"
+      "keywords": "$log $match $mfwilinks $mfwilinksprovider accessed addroute angularjs api app array associated callback callbacks calls config configure data declare deep deep-links defaults definition executed explicit failcallback function handling-deeplinks-in-javascript help https implicit inject injectable instance link linking ll loaded log match matchcallback matched matches method methods_addroute mfw-ionic named nested nomatchcallback non-matches object options org parent prefix prepended provider receive registered registering relative route routedeforurl router routesprefix service setting settings special statenameorcallback string successcallback target ui ui-router undefined uri url"
     },
     {
       "section": "api",

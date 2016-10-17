@@ -214,6 +214,76 @@ function configDeepLinks($mfwiLinksProvider) {
 
 
 
+### Server
+
+In order to enable your application to handle Universal/App links, you must include your application in the list of allowed apps.
+
+You'll find further information in Apple's documentation for [Universal links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html) and Google's documentation for [App links](https://developer.android.com/training/app-links/index.html).
+
+
+#### Apple Universal links
+
+Assuming your application bundleID with team prefix is `C2UZU6ZLJE.com.company.app`, update the `apple-app-site-association` with your app link:
+
+```js
+{
+  "appID": "C2UZU6ZLJE.com.company.app",
+  "paths": [/* URL path */]
+}
+```
+
+Here's an example of `apple-app-site-association` file:
+
+```json
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "C2UZU6ZLJE.com.company.app",
+        "paths": ["/your-path/*"]
+      }
+    ]
+  }
+}
+```
+
+> **Remember** this file must be accessible from public URL: https://your-domain/.well-known/apple-app-site-association
+
+
+#### Google App links
+
+Assuming your application package name is `com.company.app`, update the `assetlinks.json` with your app link:
+
+```js
+{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.company.app",
+    "sha256_cert_fingerprints": [/* App fingerprint */]
+  }
+}
+```
+
+Here's an example of `assetlinks.json` file:
+
+```json
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.company.app",
+      "sha256_cert_fingerprints": ["0A:00:7A:D8:BF:C9:04:9D:AA:33:00:C9:65:2C:95:E0:41:0C:F5:31:9E:26:8C:18:14:A7:CB:E1:64:7D:71:76"]
+    }
+  }
+]
+```
+
+> **Remember** this file must be accessible from public URL: https://your-domain/.well-known/assetlinks.json
+
+
 ## Development
 
 * Use Gitflow
