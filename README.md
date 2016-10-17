@@ -147,6 +147,8 @@ function configRoutes(&stateProvider) {
             data: {
                 // deep link URL: /section4
                 deepLink: {
+                    // Special key: It will access state 'settings' and then it will load this state
+                    uiRouterParent: 'settings',
                     param1: 'value1',
                     param2: 'value2'
                 }
@@ -184,11 +186,13 @@ function configDeepLinks($mfwiLinksProvider) {
         .config({
             // All registered routes (imperative and declarative) will be prepended with this prefix
             routesPrefix: '/app',
+            // Milliseconds of delay between loading parent state and the matched one
+            nestedStatesDelay: 700,
             // Callback executed for each match
             matchCallback: ['$log', '$match', function ($log, $match) {
                 $log.log('Match found', $match);
             }],
-          // Callback executed for each non match
+            // Callback executed for each non match
             nomatchCallback: ['$log', '$match', function ($log, $match) {
                 $log.log('No match found', $match);
             }]

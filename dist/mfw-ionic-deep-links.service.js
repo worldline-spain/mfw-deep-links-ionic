@@ -70,6 +70,8 @@
    * * As `Function` or `Array.<string|function()>`: the state URL is used as deep link and the injectable callback is set.
    * * As `object` value: the state URL is used as deep link and the object itself is used as route data.
    *    * You can define a `callback` property with an injectable callback definition.
+   *    * You can define a `uiRouterParent` property the name of the state to be loaded before the current one to ensure
+   *    a navigation flow.
    *
    * **Example**
    *
@@ -117,6 +119,7 @@
    *             data: {
    *                 // deep link URL: /section4
    *                 deepLink: {
+   *                     uiRouterParent: 'settings',
    *                     param1: 'value1',
    *                     param2: 'value2'
    *                 }
@@ -169,7 +172,8 @@
     var defaultOptions = {
       matchCallback: undefined,
       nomatchCallback: undefined,
-      routesPrefix: ''
+      routesPrefix: '',
+      nestedStatesDelay: 800
     };
     var routes = {};
 
@@ -188,7 +192,8 @@
      *     $mfwiLinksProvider.config({
      *         routesPrefix: '/app',
      *         matchCallback: successCallback,
-     *         nomatchCallback: failCallback
+     *         nomatchCallback: failCallback,
+     *         nestedStatesDelay: 500
      *     });
      *
      *     // Registering any route will have a '/app' prefix
@@ -209,6 +214,10 @@
      *    {@link mfw-ionic.deep-links.$mfwiLinksProvider#methods_addRoute route} calls.
      *
      *    Defaults to: `""`
+     * @param {number=} options.nestedStatesDelay Time to wait until load the accessed state when using parent state
+     *    `uiRouterParent` reference.
+     *
+     *    Defaults to: 800
      * @returns {object} Provider instance for nested calls.
      */
     this.config = function (options) {
@@ -226,6 +235,8 @@
      *
      *    * If `string`: URL to be matched.
      *    * If `object`: route {@link https://github.com/driftyco/ionic-plugin-deeplinks#handling-deeplinks-in-javascript definition}.
+     *      You can set an special key named `uiRouterParent` and `$mfwiLinks` will go to that parent state before accessing
+     *      the target state.
      *
      * @param {string|Function|Array.<String|function()>} stateNameOrCallback
      *    Match callback:
@@ -251,8 +262,8 @@
      *     // Route with data
      *     .addRoute({
      *         '/help': {
-     *             target: 'app.help',
-     *             parent: 'app.home'
+     *             callback: 'app.help',
+     *             uiRouterParent: 'app.home'
      *         }
      *      })
      *     // Injectable callback
@@ -277,7 +288,9 @@
       }
 
       for (var key in routeDef) {
-        routeDef[key]['callback'] = stateNameOrCallback;
+        if (angular.isUndefined(routeDef[key]['callback']) && stateNameOrCallback) {
+          routeDef[key]['callback'] = stateNameOrCallback;
+        }
       }
 
       // Add it
@@ -286,7 +299,7 @@
       return this;
     };
 
-    this.$get = ['$log', '$q', '$window', '$ionicPlatform', '$state', '$injector', function ($log, $q, $window, $ionicPlatform, $state, $injector) {
+    this.$get = ['$log', '$q', '$timeout', '$window', '$ionicPlatform', '$state', '$injector', function ($log, $q, $timeout, $window, $ionicPlatform, $state, $injector) {
       /**
        * @ngdoc service
        * @name mfw-ionic.deep-links.service:$mfwiLinks
@@ -336,13 +349,24 @@
         var stateNameOrCallback = match.$route.callback;
 
         if (angular.isString(stateNameOrCallback)) {
-          $state.go(match.$route.callback, match.$args);
+          var uiRouterParentName = match.$route.uiRouterParent;
+          if (angular.isDefined(uiRouterParentName)) {
+            // Open parent and then the state
+            $state.go(uiRouterParentName, match.$args);
+            $timeout(function () {
+              $state.go(stateNameOrCallback, match.$args);
+            }, defaultOptions.nestedStatesDelay);
+          } else {
+            // Open the state
+            $state.go(stateNameOrCallback, match.$args);
+          }
         } else if (angular.isFunction(stateNameOrCallback) || angular.isArray(stateNameOrCallback)) {
           $injector.invoke(stateNameOrCallback, null, {$match: match});
         } else if (angular.isDefined(stateNameOrCallback)) {
           throw new Error('Unexpected type for stateNameOrCallback. Expected string or function, found:', typeof stateNameOrCallback);
         }
 
+        // General match callback
         if (angular.isDefined(defaultOptions.matchCallback)) {
           $injector.invoke(defaultOptions.matchCallback, null, {$match: match});
         }
@@ -354,6 +378,7 @@
        * @private
        */
       function _nomatch(nomatch) {
+        // General non match callback
         if (angular.isDefined(defaultOptions.nomatchCallback)) {
           $injector.invoke(defaultOptions.nomatchCallback, null, {$match: nomatch});
         }
@@ -396,7 +421,9 @@
           // Route data with explicit callback, if any
           //console.debug('Configuring deepLink with data for state ' + stateName + ': ' + stateUrl, deepLink);
           var routeDef = {};
-          routeDef[stateUrl] = deepLink;
+          routeDef[stateUrl] = angular.extend({}, deepLink, {
+            callback: stateName
+          });
           $mfwiLinksProvider.addRoute(routeDef);
         } else {
           console.warn('Unknown deep link configuration for state ' + stateName, deepLink);
