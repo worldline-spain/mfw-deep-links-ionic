@@ -1,0 +1,119 @@
+<a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/9a3ef4b/src/mfw-ionic-deep-links.service.js#L141" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable=""></code>
+<div><span class="hint"></span>
+</div>
+</h1>
+<div><h2 id="dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="#/api/ionic">ionic</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="https://github.com/angular-ui/ui-router">ui.router</a></code>
+</li>
+</ul>
+<div class="mfw-ionic-deep-links-page"><h2 id="description">Description</h2>
+<p>This module provides an abstraction of <a href="https://github.com/driftyco/ionic-plugin-deeplinks#non-ionicangular"><code>IonicDeeplink</code> plugin</a>.</p>
+<h3 id="description_ngcordova-and-ionic-native">ngCordova and Ionic Native</h3>
+<p>JavaScript code of <a href="https://github.com/driftyco/ionic-plugin-deeplinks">IonicDeeplink</a> is used as plain JS module instead
+of the <a href="https://github.com/driftyco/ionic-plugin-deeplinks#ionicangular-1"><code>$cordovaDeeplinks</code></a> AngularJS service.</p>
+<p>That&#39;s because it&#39;s not part of commonly used <a href="http://ngcordova.com/docs/plugins/">ngCordova</a> project.
+It&#39;s defined in a drop-in replacement project named <a href="http://ionicframework.com/docs/v2/native/">ionic-native</a>.</p>
+<p>Setting <code>ionic.native</code> AngularJS module as a requirement may collide with projects using ngCordova because all
+service names are the same.</p>
+<h2 id="plugins">Plugins</h2>
+<p>This module requires the following Cordova plugins:</p>
+<ul>
+<li><a href="https://github.com/driftyco/ionic-plugin-deeplinks">ionic-plugin-deeplinks</a></li>
+</ul>
+<h2 id="features">Features</h2>
+<h3 id="features_ui-router-integration">UI Router integration</h3>
+<p>Provider <a href="#/api/mfw-ionic.deep-links.$mfwiLinksProvider"><code>$mfwiLinksProvider</code></a> offers a way of <em>linking</em> ui.router
+states to deep links.</p>
+<h4 id="features_ui-router-integration_explicit-links">Explicit links</h4>
+<p>Method <a href="#/api/mfw-ionic.deep-links.$mfwiLinksProvider#methods_addroute"><code>$mfwiLinksProvider.addRoute()</code></a> allows you
+to specify a deep link URL associated to a state name, so the state is accessed automatically when a deep link match
+is found.</p>
+<p><strong>Example</strong></p>
+<pre class="prettyprint linenums">
+    $mfwiLinksProvider
+        // One to one
+        .addRoute('/products', 'app.products')
+        // Match parameters are used as `$stateParams`
+        .addRoute('/products/:productId', 'app.products.detail');
+</pre>
+<h4 id="features_ui-router-integration_declarative-links-state-definitions">Declarative links: state definitions</h4>
+<p>There&#39;s a declarative way of deining links to ui.router states just by adding a <code>deepLink</code> property to the state&#39;s <code>data</code> object.</p>
+<p>This way you can avoid using explicitly <a href="#/api/mfw-ionic.deep-links.$mfwiLinksProvider"><code>$mfwiLinksProvider</code></a> to add
+deep links to your screen states.</p>
+<p>You can define deep links in your state in different ways:</p>
+<ul>
+<li>As <code>true</code> boolean value: the state URL is used as deep link route URL</li>
+<li>As <code>String</code> value: explicit deep link route URL</li>
+<li>As <code>Function</code> or <code>Array.&lt;string|function()&gt;</code>: the state URL is used as deep link and the injectable callback is set.</li>
+<li>As <code>object</code> value: the state URL is used as deep link and the object itself is used as route data.<ul>
+<li>You can define a <code>callback</code> property with an injectable callback definition.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="prettyprint linenums">
+    $stateProvider
+        .state({
+            name: 'settings',
+            url: '/settings',
+            data: {
+                // deep link URL: /settings
+                deepLink: true
+            }
+        })
+        .state({
+            name: 'settings.language',
+            url: '/language',
+            data: {
+                // deep link URL: /customer/language
+                deepLink: '/customer/language'
+            }
+        })
+        .state({
+            name: 'settings.section2',
+            url: '/section2',
+            data: {
+                // deep link URL: /settings/section2
+                deepLink: ['$log', '$match', function ($log, $match) {
+                    $log.log('Match found', $match);
+                }]
+            }
+        })
+        .state({
+            name: 'section3',
+            url: '/section3',
+            data: {
+                // deep link URL: /section3
+                deepLink: function ($log, $match) {
+                    $log.log('Match found', $match);
+                }
+            }
+        })
+        .state({
+            name: 'section4',
+            url: '/section4',
+            data: {
+                // deep link URL: /section4
+                deepLink: {
+                    param1: 'value1',
+                    param2: 'value2'
+                }
+            }
+        })
+        .state({
+            name: 'section5',
+            url: '/section5',
+            data: {
+                // deep link URL: /settings/section5
+                deepLink: {
+                    param1: 'value1',
+                    param2: 'value2',
+                    callback: function ($match) {
+                    }
+                }
+            }
+        });
+</pre>
+</div></div>
