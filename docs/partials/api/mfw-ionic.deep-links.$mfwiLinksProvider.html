@@ -1,4 +1,4 @@
-<a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/9a3ef4b/src/mfw-ionic-deep-links.service.js#L166" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">$mfwiLinksProvider</code>
+<a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/ea2f4cc/src/mfw-ionic-deep-links.service.js#L169" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">$mfwiLinksProvider</code>
 <div><span class="hint">service in module <code ng:non-bindable="">mfw-ionic.deep-links</code>
 </span>
 </div>
@@ -7,7 +7,7 @@
 <div class="description"><div class="mfw-ionic-deep-links-mfwilinksprovider-page"><p>Provider of <a href="#/api/mfw-ionic.deep-links.service:$mfwiLinks"><code>$mfwiLinks</code></a> service.</p>
 </div></div>
 <div class="member method"><h2 id="methods">Methods</h2>
-<ul class="methods"><li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/9a3ef4b/src/mfw-ionic-deep-links.service.js#L268" class="view-source icon-eye-open"> </a><h3 id="methods_addroute">addRoute(routeDefOrUrl, stateNameOrCallback)</h3>
+<ul class="methods"><li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/ea2f4cc/src/mfw-ionic-deep-links.service.js#L279" class="view-source icon-eye-open"> </a><h3 id="methods_addroute">addRoute(routeDefOrUrl, stateNameOrCallback)</h3>
 <div class="addroute"><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Declare a new route by setting the relative URI and an associated callback.</p>
 <p>Callbacks can be:</p>
 <ul>
@@ -24,8 +24,8 @@ $mfwiLinksProvider
     // Route with data
     .addRoute({
         '/help': {
-            target: 'app.help',
-            parent: 'app.home'
+            callback: 'app.help',
+            uiRouterParent: 'app.home'
         }
      })
     // Injectable callback
@@ -38,7 +38,9 @@ $mfwiLinksProvider
 </div><h5 id="methods_addroute_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>routeDefOrUrl</td><td><a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Deep link route definition:</p>
 <ul>
 <li>If <code>string</code>: URL to be matched.</li>
-<li>If <code>object</code>: route <a href="https://github.com/driftyco/ionic-plugin-deeplinks#handling-deeplinks-in-javascript">definition</a>.</li>
+<li>If <code>object</code>: route <a href="https://github.com/driftyco/ionic-plugin-deeplinks#handling-deeplinks-in-javascript">definition</a>.
+You can set an special key named <code>uiRouterParent</code> and <code>$mfwiLinks</code> will go to that parent state before accessing
+the target state.</li>
 </ul>
 </div></td></tr><tr><td>stateNameOrCallback</td><td><a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-function">Function</a><a href="" class="label type-hint type-hint-array">Array.&lt;String|function()&gt;</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Match callback:</p>
 <ul>
@@ -48,14 +50,15 @@ $mfwiLinksProvider
 </div></td></tr></tbody></table><h5 id="methods_addroute_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Provider instance for nested calls.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/9a3ef4b/src/mfw-ionic-deep-links.service.js#L214" class="view-source icon-eye-open"> </a><h3 id="methods_config">config(options)</h3>
+<li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/ea2f4cc/src/mfw-ionic-deep-links.service.js#L223" class="view-source icon-eye-open"> </a><h3 id="methods_config">config(options)</h3>
 <div class="config"><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Configure linking options.</p>
 <p><strong>Example</strong></p>
 <pre class="prettyprint linenums">
     $mfwiLinksProvider.config({
         routesPrefix: '/app',
         matchCallback: successCallback,
-        nomatchCallback: failCallback
+        nomatchCallback: failCallback,
+        nestedStatesDelay: 500
     });
 
     // Registering any route will have a '/app' prefix
@@ -72,6 +75,9 @@ $mfwiLinksProvider
 </div></td></tr><tr><td>routesPrefix <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Prefix to be prepended to all
 <a href="#/api/mfw-ionic.deep-links.$mfwiLinksProvider#methods_addroute">route</a> calls.</p>
 <p>Defaults to: <code>&quot;&quot;</code></p>
+</div></td></tr><tr><td>nestedStatesDelay <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Time to wait until load the accessed state when using parent state
+<code>uiRouterParent</code> reference.</p>
+<p>Defaults to: 800</p>
 </div></td></tr></tbody></table></td></tr></tbody></table><h5 id="methods_config_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Provider instance for nested calls.</p>
 </div></td></tr></table></div>
 </li>
