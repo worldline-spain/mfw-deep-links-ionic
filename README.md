@@ -1,4 +1,4 @@
-# MFW Ionic Deep Links v1.0.0
+# MFW Ionic Deep Links v1.0.2
 
 This AngularJS module provides a way to associate app screens to URLs as part of **Mobile FrameWork (MFW)** for **Ionic** applications.
 
@@ -253,6 +253,8 @@ Here's an example of `apple-app-site-association` file:
 ```
 
 > **Remember** this file must be accessible from public URL: https://your-domain/.well-known/apple-app-site-association
+
+> **Important**: this link may help you if Universal links do not work: [Debugging universal links](http://building.usebutton.com/debugging/ios/deep-linking/links/universal-links/2016/03/31/debugging-universal-links/).
 
 
 #### Google App links
