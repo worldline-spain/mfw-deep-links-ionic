@@ -174,7 +174,10 @@
       nomatchCallback: undefined,
       routesPrefix: '',
       nestedStatesDelay: 800,
-      hash: ''
+      hash: '',
+      transitionHandler: ['$state', '$match', '$toState', '$toStateParams', function ($state, $match, $toState, $toStateParams) {
+        $state.go($toState, $toStateParams);
+      }]
     };
     var routes = {};
 
@@ -219,6 +222,14 @@
      *    `uiRouterParent` reference.
      *
      *    Defaults to: 800
+     * @param {Function|Array.<String|function()>} options.transitionHandler
+     *    Injectable function that is responsible of matched transitions. Local injectable values:
+     *
+     *    * `$toState`: name of the matched state
+     *    * `$toStateParams`: object with matched parameters
+     *    * `$match`: {@link https://github.com/driftyco/ionic-plugin-deeplinks#ionicangular-1 $match} object
+     *
+     *    Defaults to: `$state.go($toState, $toStateParams);`
      * @returns {object} Provider instance for nested calls.
      */
     this.config = function (options) {
@@ -362,13 +373,13 @@
           var uiRouterParentName = match.$route.uiRouterParent;
           if (angular.isDefined(uiRouterParentName) && !$state.is(uiRouterParentName)) {
             // Open parent and then the state
-            $state.go(uiRouterParentName, match.$args);
+            callTransitionHandler(uiRouterParentName, match);
             $timeout(function () {
-              $state.go(stateNameOrCallback, match.$args);
+              callTransitionHandler(stateNameOrCallback, match);
             }, defaultOptions.nestedStatesDelay);
           } else {
             // Open the state
-            $state.go(stateNameOrCallback, match.$args);
+            callTransitionHandler(stateNameOrCallback, match);
           }
         } else if (angular.isFunction(stateNameOrCallback) || angular.isArray(stateNameOrCallback)) {
           $injector.invoke(stateNameOrCallback, null, {$match: match});
@@ -379,6 +390,14 @@
         // General match callback
         if (angular.isDefined(defaultOptions.matchCallback)) {
           $injector.invoke(defaultOptions.matchCallback, null, {$match: match});
+        }
+
+        function callTransitionHandler(toState, match) {
+          $injector.invoke(defaultOptions.transitionHandler, null, {
+            $toState: toState,
+            $toStateParams: match.$args,
+            $match: match
+          });
         }
       }
 
