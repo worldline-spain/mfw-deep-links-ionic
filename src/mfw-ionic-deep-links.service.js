@@ -173,7 +173,8 @@
       matchCallback: undefined,
       nomatchCallback: undefined,
       routesPrefix: '',
-      nestedStatesDelay: 800
+      nestedStatesDelay: 800,
+      hash: ''
     };
     var routes = {};
 
@@ -326,7 +327,16 @@
           // Add routesPrefix if available
           for (var key in routes) {
             if (defaultOptions.routesPrefix && defaultOptions.routesPrefix.length) {
-              var newKey = defaultOptions.routesPrefix + key;
+              var newKey;
+
+              // Adding a hash (# AngularJS-link URLs) require removing the first slash
+              // https://github.com/driftyco/ionic-plugin-deeplinks/issues/57#issuecomment-265489839
+              if (defaultOptions.hash && defaultOptions.hash.length) {
+                newKey = key.slice(1);
+              } else {
+                newKey = defaultOptions.routesPrefix + key;
+              }
+
               routes[newKey] = routes[key];
               delete routes[key];
               key = newKey;
@@ -350,7 +360,7 @@
 
         if (angular.isString(stateNameOrCallback)) {
           var uiRouterParentName = match.$route.uiRouterParent;
-          if (angular.isDefined(uiRouterParentName)) {
+          if (angular.isDefined(uiRouterParentName) && !$state.is(uiRouterParentName)) {
             // Open parent and then the state
             $state.go(uiRouterParentName, match.$args);
             $timeout(function () {
