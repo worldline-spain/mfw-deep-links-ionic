@@ -1,4 +1,4 @@
-# MFW Ionic Deep Links v1.0.2
+# MFW Ionic Deep Links v1.0.3
 
 This AngularJS module provides a way to associate app screens to URLs as part of **Mobile FrameWork (MFW)** for **Ionic** applications.
 
