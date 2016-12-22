@@ -331,7 +331,7 @@
               delete routes[key];
               key = newKey;
             }
-            console.debug('Registering deepLink ' + key + ':', routes[key]);
+            $log.debug('Registering deepLink ' + key + ':', routes[key]);
           }
 
           if ($window.cordova) {
@@ -399,7 +399,8 @@
 
       if (data && angular.isDefined(data.deepLink)) {
         var stateName = state.name;
-        var stateUrl = state.url;
+        var parentUrl = (state.parent.url || '').toString();
+        var stateUrl = parentUrl + (state.url || '');
 
         console.debug('Deep link for ui.router state ' + stateName);
 

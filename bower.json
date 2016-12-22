@@ -7,7 +7,7 @@
   ],
   "license": "Apache-2.0",
   "main": [
-    "dist/mfw-ionic-inapp-browser.service.js"
+    "dist/mfw-ionic-deep-links.service.js"
   ],
   "homepage": "https://github.com/worldline-spain/mfw-deep-links-ionic",
   "repository": {
