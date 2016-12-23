@@ -1,4 +1,4 @@
-<a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/1c7035e/src/mfw-ionic-deep-links.service.js#L169" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">$mfwiLinksProvider</code>
+<a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/dfd8b65/src/mfw-ionic-deep-links.service.js#L169" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">$mfwiLinksProvider</code>
 <div><span class="hint">service in module <code ng:non-bindable="">mfw-ionic.deep-links</code>
 </span>
 </div>
@@ -7,7 +7,7 @@
 <div class="description"><div class="mfw-ionic-deep-links-mfwilinksprovider-page"><p>Provider of <a href="#/api/mfw-ionic.deep-links.service:$mfwiLinks"><code>$mfwiLinks</code></a> service.</p>
 </div></div>
 <div class="member method"><h2 id="methods">Methods</h2>
-<ul class="methods"><li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/1c7035e/src/mfw-ionic-deep-links.service.js#L291" class="view-source icon-eye-open"> </a><h3 id="methods_addroute">addRoute(routeDefOrUrl, stateNameOrCallback)</h3>
+<ul class="methods"><li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/dfd8b65/src/mfw-ionic-deep-links.service.js#L304" class="view-source icon-eye-open"> </a><h3 id="methods_addroute">addRoute(routeDefOrUrl, stateNameOrCallback)</h3>
 <div class="addroute"><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Declare a new route by setting the relative URI and an associated callback.</p>
 <p>Callbacks can be:</p>
 <ul>
@@ -40,7 +40,8 @@ $mfwiLinksProvider
 <li>If <code>string</code>: URL to be matched.</li>
 <li>If <code>object</code>: route <a href="https://github.com/driftyco/ionic-plugin-deeplinks#handling-deeplinks-in-javascript">definition</a>.
 You can set an special key named <code>uiRouterParent</code> and <code>$mfwiLinks</code> will go to that parent state before accessing
-the target state.</li>
+the target state.
+Property <code>uiRouterParent</code> can be either a string (single parent) or an first-to-last ordered array of nested parents.</li>
 </ul>
 </div></td></tr><tr><td>stateNameOrCallback</td><td><a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-function">Function</a><a href="" class="label type-hint type-hint-array">Array.&lt;String|function()&gt;</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Match callback:</p>
 <ul>
@@ -50,7 +51,7 @@ the target state.</li>
 </div></td></tr></tbody></table><h5 id="methods_addroute_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-addroute-page"><p>Provider instance for nested calls.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/1c7035e/src/mfw-ionic-deep-links.service.js#L235" class="view-source icon-eye-open"> </a><h3 id="methods_config">config(options)</h3>
+<li><a href="https://github.com/worldline-spain/mfw-deep-links-ionic/blob/dfd8b65/src/mfw-ionic-deep-links.service.js#L247" class="view-source icon-eye-open"> </a><h3 id="methods_config">config(options)</h3>
 <div class="config"><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Configure linking options.</p>
 <p><strong>Example</strong></p>
 <pre class="prettyprint linenums">
@@ -58,7 +59,8 @@ the target state.</li>
         routesPrefix: '/app',
         matchCallback: successCallback,
         nomatchCallback: failCallback,
-        nestedStatesDelay: 500
+        nestedStatesDelay: 100,
+        transitionHandler: customTransitionHandler
     });
 
     // Registering any route will have a '/app' prefix
@@ -75,15 +77,23 @@ the target state.</li>
 </div></td></tr><tr><td>routesPrefix <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Prefix to be prepended to all
 <a href="#/api/mfw-ionic.deep-links.$mfwiLinksProvider#methods_addroute">route</a> calls.</p>
 <p>Defaults to: <code>&quot;&quot;</code></p>
+</div></td></tr><tr><td>hash <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Specify an AngularJS-link hash and hash prefix.
+AngularJS-link URLs <a href="https://github.com/driftyco/ionic-plugin-deeplinks/issues/57#issuecomment-265489839">do not match</a>
+if deep link URLs contain <code>/</code> at the begining. If this parameter is set then it removes the first / before
+registering the deep link.</p>
+<p>Defaults to: <code>&quot;&quot;</code></p>
 </div></td></tr><tr><td>nestedStatesDelay <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-number">number</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Time to wait until load the accessed state when using parent state
 <code>uiRouterParent</code> reference.</p>
-<p>Defaults to: 800</p>
+<p>If set to a negative value, nested transitions will wait for the <code>$state.go(...)</code> return promise to resolve.</p>
+<p>Defaults to: -1</p>
 </div></td></tr><tr><td>transitionHandler</td><td><a href="" class="label type-hint type-hint-function">Function</a><a href="" class="label type-hint type-hint-array">Array.&lt;String|function()&gt;</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Injectable function that is responsible of matched transitions. Local injectable values:</p>
 <ul>
 <li><code>$toState</code>: name of the matched state</li>
 <li><code>$toStateParams</code>: object with matched parameters</li>
 <li><code>$match</code>: <a href="https://github.com/driftyco/ionic-plugin-deeplinks#ionicangular-1">$match</a> object</li>
 </ul>
+<p>This function should return a Promise if you want nested transitions to wait for the previous ones
+(<code>nestedStatesDelay &lt; 0</code>).</p>
 <p>Defaults to: <code>$state.go($toState, $toStateParams);</code></p>
 </div></td></tr></tbody></table></td></tr></tbody></table><h5 id="methods_config_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="mfw-ionic-deep-links-mfwilinksprovider-config-page"><p>Provider instance for nested calls.</p>
 </div></td></tr></table></div>

@@ -70,7 +70,7 @@
    * * As `Function` or `Array.<string|function()>`: the state URL is used as deep link and the injectable callback is set.
    * * As `object` value: the state URL is used as deep link and the object itself is used as route data.
    *    * You can define a `callback` property with an injectable callback definition.
-   *    * You can define a `uiRouterParent` property the name of the state to be loaded before the current one to ensure
+   *    * You can define a `uiRouterParent` property the name of the state(s) to be loaded before the current one to ensure
    *    a navigation flow.
    *
    * **Example**
@@ -173,7 +173,7 @@
       matchCallback: undefined,
       nomatchCallback: undefined,
       routesPrefix: '',
-      nestedStatesDelay: 800,
+      nestedStatesDelay: -1,
       hash: '',
       transitionHandler: ['$state', '$match', '$toState', '$toStateParams', function ($state, $match, $toState, $toStateParams) {
         $state.go($toState, $toStateParams);
@@ -197,7 +197,8 @@
      *         routesPrefix: '/app',
      *         matchCallback: successCallback,
      *         nomatchCallback: failCallback,
-     *         nestedStatesDelay: 500
+     *         nestedStatesDelay: 100,
+     *         transitionHandler: customTransitionHandler
      *     });
      *
      *     // Registering any route will have a '/app' prefix
@@ -218,16 +219,27 @@
      *    {@link mfw-ionic.deep-links.$mfwiLinksProvider#methods_addRoute route} calls.
      *
      *    Defaults to: `""`
+     * @param {string=} options.hash Specify an AngularJS-link hash and hash prefix.
+     *    AngularJS-link URLs {@link https://github.com/driftyco/ionic-plugin-deeplinks/issues/57#issuecomment-265489839 do not match}
+     *    if deep link URLs contain `/` at the begining. If this parameter is set then it removes the first / before
+     *    registering the deep link.
+     *
+     *    Defaults to: `""`
      * @param {number=} options.nestedStatesDelay Time to wait until load the accessed state when using parent state
      *    `uiRouterParent` reference.
      *
-     *    Defaults to: 800
+     *    If set to a negative value, nested transitions will wait for the `$state.go(...)` return promise to resolve.
+     *
+     *    Defaults to: -1
      * @param {Function|Array.<String|function()>} options.transitionHandler
      *    Injectable function that is responsible of matched transitions. Local injectable values:
      *
      *    * `$toState`: name of the matched state
      *    * `$toStateParams`: object with matched parameters
      *    * `$match`: {@link https://github.com/driftyco/ionic-plugin-deeplinks#ionicangular-1 $match} object
+     *
+     *    This function should return a Promise if you want nested transitions to wait for the previous ones
+     *    (`nestedStatesDelay < 0`).
      *
      *    Defaults to: `$state.go($toState, $toStateParams);`
      * @returns {object} Provider instance for nested calls.
@@ -249,6 +261,7 @@
      *    * If `object`: route {@link https://github.com/driftyco/ionic-plugin-deeplinks#handling-deeplinks-in-javascript definition}.
      *      You can set an special key named `uiRouterParent` and `$mfwiLinks` will go to that parent state before accessing
      *      the target state.
+     *      Property `uiRouterParent` can be either a string (single parent) or an first-to-last ordered array of nested parents.
      *
      * @param {string|Function|Array.<String|function()>} stateNameOrCallback
      *    Match callback:
@@ -370,17 +383,19 @@
         var stateNameOrCallback = match.$route.callback;
 
         if (angular.isString(stateNameOrCallback)) {
+          var stateStack = [];
           var uiRouterParentName = match.$route.uiRouterParent;
-          if (angular.isDefined(uiRouterParentName) && !$state.is(uiRouterParentName)) {
-            // Open parent and then the state
-            callTransitionHandler(uiRouterParentName, match);
-            $timeout(function () {
-              callTransitionHandler(stateNameOrCallback, match);
-            }, defaultOptions.nestedStatesDelay);
-          } else {
-            // Open the state
-            callTransitionHandler(stateNameOrCallback, match);
+
+          // Parent states
+          if (angular.isDefined(uiRouterParentName)) {
+            stateStack = angular.isArray(uiRouterParentName) ? [].concat(uiRouterParentName) : [uiRouterParentName];
           }
+
+          // Push end state
+          stateStack.push(stateNameOrCallback);
+
+          // Push all states in the stack
+          consumeStack(stateStack, match);
         } else if (angular.isFunction(stateNameOrCallback) || angular.isArray(stateNameOrCallback)) {
           $injector.invoke(stateNameOrCallback, null, {$match: match});
         } else if (angular.isDefined(stateNameOrCallback)) {
@@ -393,11 +408,27 @@
         }
 
         function callTransitionHandler(toState, match) {
-          $injector.invoke(defaultOptions.transitionHandler, null, {
+          return $injector.invoke(defaultOptions.transitionHandler, null, {
             $toState: toState,
             $toStateParams: match.$args,
             $match: match
           });
+        }
+
+        function consumeStack(stack, match) {
+          if (stack && stack.length) {
+            var retValue = callTransitionHandler(stack.shift(), match);
+            if (defaultOptions.nestedStatesDelay < 0 && angular.isDefined(retValue)) {
+              $q.when(retValue)
+                .then(recursiveStack);
+            } else {
+              $timeout(recursiveStack, defaultOptions.nestedStatesDelay);
+            }
+          }
+
+          function recursiveStack() {
+            consumeStack(stack, match);
+          }
         }
       }
 
