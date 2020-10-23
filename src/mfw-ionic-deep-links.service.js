@@ -351,16 +351,7 @@
           // Add routesPrefix if available
           for (var key in routes) {
             if (defaultOptions.routesPrefix && defaultOptions.routesPrefix.length) {
-              var newKey;
-
-              // Adding a hash (# AngularJS-link URLs) require removing the first slash
-              // https://github.com/driftyco/ionic-plugin-deeplinks/issues/57#issuecomment-265489839
-              if (defaultOptions.hash && defaultOptions.hash.length) {
-                newKey = key.slice(1);
-              } else {
-                newKey = defaultOptions.routesPrefix + key;
-              }
-
+              var newKey = defaultOptions.routesPrefix + key;
               routes[newKey] = routes[key];
               delete routes[key];
               key = newKey;
@@ -438,6 +429,31 @@
        * @private
        */
       function _nomatch(nomatch) {
+        // Try to workaround fragment match when using AngularJS # routes
+        var data = nomatch.$link;
+        var fragment = data.fragment;
+        if (fragment && fragment.length) {
+          var realPath = defaultOptions.routesPrefix + fragment;
+          var finalArgs, pathData, matched = false;
+          for (var targetPath in routes) {
+            pathData = routes[targetPath];
+
+            var matchedParams = $window.IonicDeeplink.routeMatch(targetPath, realPath);
+            if (matchedParams !== false) {
+              matched = true;
+              finalArgs = angular.extend({}, matchedParams);
+              break;
+            }
+          }
+          if (matched) {
+            return _match({
+              $route: pathData,
+              $args: finalArgs,
+              $link: data,
+            });
+          }
+        }
+
         // General non match callback
         if (angular.isDefined(defaultOptions.nomatchCallback)) {
           $injector.invoke(defaultOptions.nomatchCallback, null, {$match: nomatch});
